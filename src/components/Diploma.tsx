@@ -36,7 +36,7 @@ export default function Diploma() {
               )}
               {graduate.university && <p className="mt-1">{graduate.university}</p>}
               {graduate.graduationDate && <p className="mt-1">{graduate.graduationDate}</p>}
-              <p className="mt-3 font-semibold text-lilac-600">Voto: 110 e lode 💜</p>
+              <p className="mt-3 font-semibold text-lilac-600">Voto: 91 e lode 💜</p>
             </div>
           )}
 
