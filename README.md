@@ -10,23 +10,32 @@ nei toni del lilla, per festeggiarla.
 - [canvas-confetti](https://www.kirilv.com/canvas-confetti/) per l'effetto coriandoli
 - Deploy automatico su GitHub Pages via GitHub Actions
 
-## Sezioni attuali (facilmente modificabili/sostituibili)
+## Funzionalità
 
-- **Hero** — titolo di benvenuto + bottone "Festeggia" con coriandoli lilla
-- **Timeline** — le tappe del percorso universitario
-- **Gallery** — griglia foto con lightbox (placeholder finché non arrivano le foto vere)
-- **Diploma** — pergamena virtuale animata da aprire
-- **Elemento personalizzato** — easter egg a tema tavola periodica ("Ludovicium")
+- **Hero** — titolo di benvenuto + bottone "Festeggia" con coriandoli lilla (canvas-confetti)
+- **Timeline** — le tappe del percorso universitario, in ordine cronologico
+- **Caso investigativo** — mini-gioco a tema chimica forense: 6 indizi cliccabili sparsi in una scena, ognuno apre un pannello con dettaglio; trovarli tutti sblocca una schermata "caso chiuso" con coriandoli e pulsante rigioca
+- **Gallery** — griglia foto con lightbox a schermo intero; foto non ancora caricate mostrano un placeholder
+- **Diploma** — pergamena virtuale con effetto flip 3D, si apre al click rivelando tesi/università/data
+- **Elemento personalizzato** — easter egg a tema tavola periodica ("Ludovicium", elemento 118)
 - **Muro degli auguri** — messaggi di amici e famiglia
+- **Sfondo animato** — bolle e molecole SVG fluttuanti, puramente decorativo
+- Tutti i testi sono centralizzati in `src/data/content.ts`, così le sezioni si aggiornano senza toccare i componenti
 
-Idee non ancora implementate, da valutare: countdown/contatore "Dr.ssa da X
-giorni", modalità musica di sottofondo, dark mode lilla.
+## Prossime feature (roadmap)
+
+Tracciate come [Issue su GitHub](../../issues) — idee non ancora implementate:
+
+- Countdown/contatore "Dr.ssa da X giorni"
+- Modalità musica di sottofondo
+- Dark mode lilla
 
 ## Sviluppo locale
 
 ```bash
 npm install
 npm run dev
+npm run test   # vitest
 ```
 
 ## Contenuti
