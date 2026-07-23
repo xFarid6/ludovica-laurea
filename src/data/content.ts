@@ -9,7 +9,8 @@ export const graduate = {
   degree: 'Laurea in Chimica',
   // Formato libero, es. "9 luglio 2026"
   graduationDate: '',
-  thesisTitle: '',
+  // Placeholder plausibile: sostituisci col titolo esatto della tesi.
+  thesisTitle: 'Analisi di residui dello sparo (GSR) mediante spettroscopia LIBS',
   university: '',
 }
 
@@ -36,20 +37,29 @@ export const timeline: TimelineEvent[] = [
   },
   {
     year: 'Anno 3',
-    title: 'In laboratorio sul serio',
-    description: 'Esperimenti, analisi e tanta pazienza tra becher e bilance.',
-    emoji: '⚗️',
+    title: 'Le prime tracce',
+    description:
+      'La scoperta della chimica forense: si parte dalle tracce ematiche.',
+    emoji: '🩸',
+  },
+  {
+    year: 'Svolta',
+    title: 'Sulle tracce della polvere da sparo',
+    description:
+      'L’interesse si sposta sul GSR (Gunshot Residue): particelle invisibili, indizi decisivi.',
+    emoji: '💨',
   },
   {
     year: 'Tesi',
-    title: 'L’ultima reazione',
-    description: 'Ricerca, scrittura e revisioni fino all’ultimo giorno.',
+    title: 'LIBS: l’ultima reazione',
+    description:
+      'Spettroscopia LIBS per l’analisi dei residui dello sparo: ricerca, laser e tanta precisione.',
     emoji: '🔬',
   },
   {
     year: 'Oggi',
     title: 'Dr.ssa Ludovica!',
-    description: 'Reazione completata: obiettivo raggiunto al 100%.',
+    description: 'Caso chiuso: obiettivo raggiunto al 100%.',
     emoji: '🎓',
   },
 ]
@@ -97,6 +107,85 @@ export const guestbookMessages: GuestbookMessage[] = [
     emoji: '🥂',
   },
 ]
+
+export type Clue = {
+  id: string
+  emoji: string
+  label: string
+  // Posizione della "hotspot" nella scena, in percentuale (0-100).
+  x: number
+  y: number
+  title: string
+  detail: string
+}
+
+// I 6 indizi del mini-caso investigativo (a tema chimica forense: dalle
+// tracce ematiche al GSR, fino alla tecnica LIBS della tesi).
+export const clues: Clue[] = [
+  {
+    id: 'blood',
+    emoji: '🩸',
+    label: 'Macchia sospetta',
+    x: 22,
+    y: 72,
+    title: 'Traccia ematica',
+    detail:
+      'Da qui è iniziato tutto: le prime tracce ematiche che hanno acceso la passione per la chimica forense.',
+  },
+  {
+    id: 'glove',
+    emoji: '🧤',
+    label: 'Guanto abbandonato',
+    x: 74,
+    y: 66,
+    title: 'Residuo di polvere da sparo (GSR)',
+    detail:
+      'Particelle microscopiche di GSR sul tessuto: l’indizio decisivo, la vera specialità della nostra Dr.ssa.',
+  },
+  {
+    id: 'libs',
+    emoji: '🔬',
+    label: 'Strumento sul tavolo',
+    x: 50,
+    y: 38,
+    title: 'Spettrometro LIBS',
+    detail:
+      'Laser-Induced Breakdown Spectroscopy: un impulso laser, uno spettro di luce, un risultato. L’argomento della tesi.',
+  },
+  {
+    id: 'swab',
+    emoji: '🧷',
+    label: 'Tampone per il prelievo',
+    x: 34,
+    y: 52,
+    title: 'Campionamento',
+    detail: 'Il prelievo va fatto con cura: un campione contaminato è un indizio perso.',
+  },
+  {
+    id: 'lens',
+    emoji: '🔍',
+    label: 'Lente dimenticata',
+    x: 84,
+    y: 30,
+    title: 'Osservazione al dettaglio',
+    detail: 'Il diavolo è nei dettagli, anche in laboratorio: mai fidarsi solo a occhio nudo.',
+  },
+  {
+    id: 'report',
+    emoji: '🗂️',
+    label: 'Fascicolo del caso',
+    x: 12,
+    y: 30,
+    title: 'Referto finale',
+    detail: 'Tutti i dati raccolti, incrociati e confermati: pronti per la relazione finale.',
+  },
+]
+
+export const caseSolved = {
+  title: 'Caso chiuso, Dr.ssa Ludovica! 🎉',
+  message:
+    'Dalle tracce ematiche al GSR, fino alla spettroscopia LIBS: hai unito tutti gli indizi e risolto il caso. Proprio come nella tua tesi.',
+}
 
 // Elemento "personalizzato" per l'easter egg a tema tavola periodica.
 export const customElement = {

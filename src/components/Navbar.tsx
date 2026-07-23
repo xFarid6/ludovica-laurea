@@ -1,5 +1,6 @@
 const links = [
   { href: '#timeline', label: 'Percorso' },
+  { href: '#caso', label: 'Il caso' },
   { href: '#gallery', label: 'Ricordi' },
   { href: '#diploma', label: 'Diploma' },
   { href: '#messages', label: 'Auguri' },
