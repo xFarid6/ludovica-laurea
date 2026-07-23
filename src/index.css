@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Quicksand", ui-rounded, system-ui, sans-serif;
+  --font-body: "Poppins", system-ui, sans-serif;
+
+  /* Lilac palette, light -> deep, used across the whole site */
+  --color-lilac-50: #faf5ff;
+  --color-lilac-100: #f3e8ff;
+  --color-lilac-200: #e9d5ff;
+  --color-lilac-300: #d8b4fe;
+  --color-lilac-400: #c77dff;
+  --color-lilac-500: #b565f0;
+  --color-lilac-600: #9d4edd;
+  --color-lilac-700: #7b2cbf;
+  --color-lilac-800: #5a189a;
+  --color-lilac-900: #3c096c;
+
+  --color-bloom-50: #fff0f7;
+  --color-bloom-200: #ffd6e8;
+  --color-bloom-400: #ff8fc7;
+
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 11s ease-in-out infinite;
+  --animate-bob: bob 3.5s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(12px, -22px) rotate(8deg); }
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-lilac-900);
+  background: var(--color-lilac-50);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+::selection {
+  background: var(--color-lilac-300);
+  color: var(--color-lilac-900);
+}
