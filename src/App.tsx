@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import DoctorateCounter from './components/DoctorateCounter'
 import Timeline from './components/Timeline'
 import InvestigationPlayground from './components/InvestigationPlayground'
+import CaseRoom3D from './components/CaseRoom3D'
 import Gallery from './components/Gallery'
 import Diploma from './components/Diploma'
 import PeriodicCard from './components/PeriodicCard'
@@ -20,6 +21,7 @@ function App() {
         <DoctorateCounter />
         <Timeline />
         <InvestigationPlayground />
+        <CaseRoom3D />
         <Gallery />
         <Diploma />
         <PeriodicCard />
