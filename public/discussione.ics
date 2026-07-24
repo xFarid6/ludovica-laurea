@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Regalo Ludovica//Discussione di laurea//IT
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:discussione-ludovica-2026@regalo-ludovica
+DTSTAMP:20260701T000000Z
+DTSTART:20260723T070000Z
+DTEND:20260723T090000Z
+SUMMARY:La discussione di laurea — Ludovica
+DESCRIPTION:Il grande giorno! Discussione di laurea di Ludovica Di Stasio, Aula Cannizzaro.
+LOCATION:Aula Cannizzaro, Dipartimento di Chimica, Università di Torino
+END:VEVENT
+END:VCALENDAR

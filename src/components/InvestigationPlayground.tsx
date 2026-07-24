@@ -1,74 +1,137 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import confetti from 'canvas-confetti'
-import { clues, caseSolved, type Clue } from '../data/content'
+import { content } from '../data/content'
 import SectionHeading from './SectionHeading'
 
-const lilacPalette = ['#9d4edd', '#c77dff', '#e9d5ff', '#ff8fc7', '#7b2cbf']
+const { clues, intro, verdict } = content.investigation
+const scienceColors = ['#38bdf8', '#9d4edd', '#c77dff', '#ff8fc7']
 
-function Hotspot({
+type Clue = (typeof clues)[number]
+
+// Where each reperto sits in the 2D scene (percent of the room), plus its
+// evidence-marker number for that crime-scene-photography look.
+const SCENE_LAYOUT: Record<string, { left: number; top: number; width: number; marker: number }> = {
+  raman: { left: 4, top: 10, width: 25, marker: 1 },
+  semedx: { left: 71, top: 8, width: 25, marker: 2 },
+  icpms: { left: 4, top: 64, width: 25, marker: 3 },
+  libs: { left: 37, top: 36, width: 27, marker: 4 },
+}
+
+// Purely decorative room dressing — never focusable, never part of the game.
+const ROOM_PROPS = [
+  { emoji: '🔫', left: 6, top: 46, size: 34, rotate: -18, className: 'hidden sm:block opacity-70' },
+  { emoji: '💨', left: 16, top: 42, size: 26, rotate: 0, className: 'hidden sm:block opacity-50' },
+  { emoji: '🛡️', left: 90, top: 44, size: 28, rotate: 8, className: 'hidden sm:block opacity-60' },
+  { emoji: '🩸', left: 60, top: 12, size: 16, rotate: 12, className: 'opacity-70' },
+  { emoji: '🩸', left: 30, top: 86, size: 12, rotate: -20, className: 'opacity-60' },
+  { emoji: '👣', left: 46, top: 78, size: 18, rotate: -30, className: 'opacity-50' },
+  { emoji: '👣', left: 53, top: 84, size: 18, rotate: -15, className: 'opacity-50' },
+  { emoji: '👣', left: 60, top: 89, size: 18, rotate: -25, className: 'opacity-40' },
+] as const
+
+function EvidenceMarker({ n }: { n: number }) {
+  return (
+    <span
+      aria-hidden
+      className="absolute -top-3 -left-3 flex h-6 w-6 rotate-[-6deg] items-center justify-center bg-yellow-400 text-xs font-bold text-black shadow-sm"
+      style={{ clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }}
+    >
+      <span className="mt-1.5">{n}</span>
+    </span>
+  )
+}
+
+function TapeStrip({ rotate }: { rotate: number }) {
+  return (
+    <div
+      aria-hidden
+      className="relative -mx-4 my-4 overflow-hidden bg-ink py-1.5 shadow-md"
+      style={{ transform: `rotate(${rotate}deg)` }}
+    >
+      <div className="flex flex-nowrap gap-10 whitespace-nowrap text-xs font-bold tracking-widest text-[#fff] uppercase">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <span key={i}>Scena del laboratorio · non oltrepassare</span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ClueCard({
   clue,
-  found,
-  onClick,
+  revealed,
+  onReveal,
 }: {
   clue: Clue
-  found: boolean
-  onClick: () => void
+  revealed: boolean
+  onReveal: () => void
 }) {
   return (
     <button
       type="button"
-      onClick={onClick}
-      aria-label={clue.label}
-      className="absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-xl transition hover:scale-110"
-      style={{ left: `${clue.x}%`, top: `${clue.y}%` }}
+      onClick={onReveal}
+      aria-pressed={revealed}
+      aria-label={revealed ? `${clue.tech}: ${clue.explain}` : `Reperto coperto — indizio: ${clue.hint}`}
+      className="relative block aspect-square min-h-11 w-full cursor-pointer [perspective:1000px]"
     >
-      <span
-        className={`absolute inset-0 rounded-full ${
-          found ? 'bg-lilac-300/30' : 'animate-pulse bg-lilac-400/50'
+      <div
+        className={`relative h-full w-full rounded-2xl shadow-md shadow-lilac-200/60 transition-transform duration-500 [transform-style:preserve-3d] ${
+          revealed ? 'animate-pop [transform:rotateY(180deg)]' : ''
         }`}
-      />
-      <span className="relative">{found ? '✅' : clue.emoji}</span>
+      >
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-lilac-200 bg-gradient-to-br from-lilac-100 via-white to-bloom-50 p-3 text-center [backface-visibility:hidden]">
+          <span className="text-3xl">🔍</span>
+          <span className="text-xs font-semibold tracking-wide text-lilac-500 uppercase">{clue.tag}</span>
+          <span className="text-sm font-medium text-lilac-800">{clue.hint}</span>
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-science-300 bg-white p-3 text-center [backface-visibility:hidden] [transform:rotateY(180deg)]">
+          <span className="font-display text-base font-bold text-science-700">{clue.tech}</span>
+          <p className="text-xs leading-snug text-lilac-900/70">{clue.explain}</p>
+          <p className="text-xs font-medium text-bloom-600">{clue.love}</p>
+        </div>
+      </div>
     </button>
   )
 }
 
 export default function InvestigationPlayground() {
   const [found, setFound] = useState<Set<string>>(new Set())
-  const [active, setActive] = useState<Clue | null>(null)
   const [solved, setSolved] = useState(false)
+  const [flashing, setFlashing] = useState(false)
 
-  const allFound = useMemo(() => found.size === clues.length, [found])
+  const reveal = (id: string) => {
+    if (found.has(id)) return
+    const next = new Set(found)
+    next.add(id)
+    setFound(next)
+  }
 
-  const handleOpen = (clue: Clue) => {
-    setActive(clue)
-    if (!found.has(clue.id)) {
-      const next = new Set(found)
-      next.add(clue.id)
-      setFound(next)
-      if (next.size === clues.length) {
-        setTimeout(() => {
-          setSolved(true)
-          confetti({ particleCount: 120, spread: 110, origin: { y: 0.5 }, colors: lilacPalette })
-        }, 400)
+  useEffect(() => {
+    if (found.size === clues.length && !solved) {
+      setFlashing(true)
+      const flashTimer = setTimeout(() => setFlashing(false), 900)
+      const solveTimer = setTimeout(() => {
+        setSolved(true)
+        confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 }, colors: scienceColors })
+      }, 350)
+      return () => {
+        clearTimeout(flashTimer)
+        clearTimeout(solveTimer)
       }
     }
-  }
+  }, [found, solved])
 
   const reset = () => {
     setFound(new Set())
-    setActive(null)
     setSolved(false)
   }
 
   return (
     <section id="caso" className="mx-auto max-w-3xl px-6 py-24">
-      <SectionHeading eyebrow="Un piccolo caso da risolvere" title="La scena del... laboratorio" />
-      <p className="mx-auto -mt-6 mb-8 max-w-lg text-center text-lilac-900/70">
-        Clicca sugli indizi nascosti nella scena e ricostruisci il caso, dalle
-        tracce ematiche fino alla spettroscopia LIBS.
-      </p>
+      <SectionHeading eyebrow="Il Caso Di Stasio" title="Raccogli gli indizi" />
+      <p className="mx-auto -mt-6 mb-8 max-w-lg text-center text-lilac-900/70">{intro}</p>
 
-      <div className="mb-4 flex items-center justify-center gap-3">
+      <div className="mb-6 flex items-center justify-center gap-3">
         <div className="h-2 w-40 overflow-hidden rounded-full bg-lilac-100">
           <div
             className="h-full rounded-full bg-lilac-500 transition-all duration-500"
@@ -80,85 +143,73 @@ export default function InvestigationPlayground() {
         </span>
       </div>
 
-      {/* Scena */}
-      <div className="relative aspect-4/3 overflow-hidden rounded-3xl border-4 border-lilac-300 bg-gradient-to-b from-lilac-100 via-lilac-50 to-bloom-50 shadow-xl shadow-lilac-300/40">
-        {/* nastro da "scena del crimine", in versione lilla */}
-        <div className="absolute -left-16 top-6 w-64 -rotate-12 bg-lilac-600 py-1.5 text-center text-[11px] font-bold tracking-widest text-white shadow">
-          SCENA DEL LABORATORIO · NON OLTREPASSARE
-        </div>
-        <div className="absolute -right-16 top-6 w-64 rotate-12 bg-lilac-600 py-1.5 text-center text-[11px] font-bold tracking-widest text-white shadow">
-          SCENA DEL LABORATORIO · NON OLTREPASSARE
-        </div>
+      <TapeStrip rotate={-1.2} />
 
-        {/* arredo stilizzato */}
-        <div className="absolute bottom-0 left-1/2 h-28 w-64 -translate-x-1/2 rounded-t-2xl bg-lilac-200/70" />
-        <div className="absolute bottom-24 left-1/2 h-6 w-56 -translate-x-1/2 rounded bg-lilac-300/80" />
-        <div className="absolute top-8 right-10 h-16 w-16 rounded-lg border-2 border-lilac-300 bg-white/50" />
-
-        {clues.map((clue) => (
-          <Hotspot
-            key={clue.id}
-            clue={clue}
-            found={found.has(clue.id)}
-            onClick={() => handleOpen(clue)}
-          />
+      <div
+        className="relative min-h-[420px] overflow-hidden rounded-2xl border-2 border-lilac-200 bg-lilac-50 sm:min-h-[480px]"
+        style={{
+          backgroundImage:
+            'conic-gradient(var(--color-lilac-100) 90deg, transparent 90deg 180deg, var(--color-lilac-100) 180deg 270deg, transparent 270deg)',
+          backgroundSize: '48px 48px',
+        }}
+      >
+        {ROOM_PROPS.map((prop, i) => (
+          <span
+            key={i}
+            aria-hidden
+            className={`pointer-events-none absolute select-none ${prop.className}`}
+            style={{
+              left: `${prop.left}%`,
+              top: `${prop.top}%`,
+              fontSize: prop.size,
+              transform: `rotate(${prop.rotate}deg)`,
+            }}
+          >
+            {prop.emoji}
+          </span>
         ))}
+
+        {clues.map((clue) => {
+          const pos = SCENE_LAYOUT[clue.id]
+          return (
+            <div
+              key={clue.id}
+              className="absolute"
+              style={{ left: `${pos.left}%`, top: `${pos.top}%`, width: `${pos.width}%` }}
+            >
+              <EvidenceMarker n={pos.marker} />
+              <ClueCard clue={clue} revealed={found.has(clue.id)} onReveal={() => reveal(clue.id)} />
+            </div>
+          )
+        })}
       </div>
 
-      {allFound && (
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={reset}
-            className="font-display cursor-pointer rounded-full border-2 border-lilac-300 px-6 py-2 text-sm font-semibold text-lilac-600 transition hover:bg-lilac-100"
-          >
-            Rigioca il caso ↺
-          </button>
-        </div>
+      <TapeStrip rotate={1.2} />
+
+      {found.size === clues.length && !solved && (
+        <p className="mt-6 text-center text-sm font-medium text-science-700">
+          Tutti gli indizi raccolti — il laser sta parlando…
+        </p>
       )}
 
-      {active && !solved && (
-        <div
-          className="animate-pop fixed inset-0 z-50 flex items-center justify-center bg-lilac-900/60 p-6 backdrop-blur-sm"
-          onClick={() => setActive(null)}
-        >
-          <div
-            className="max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-2 text-4xl">{active.emoji}</div>
-            <h3 className="font-display text-xl font-bold text-lilac-800">{active.title}</h3>
-            <p className="mt-2 text-lilac-900/70">{active.detail}</p>
-            <button
-              type="button"
-              onClick={() => setActive(null)}
-              className="font-display mt-5 cursor-pointer rounded-full bg-lilac-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-lilac-700"
-            >
-              Continua l’indagine
-            </button>
-          </div>
-        </div>
+      {flashing && (
+        <div aria-hidden className="animate-flash pointer-events-none fixed inset-0 z-50 bg-science-300" />
       )}
 
       {solved && (
         <div
-          className="animate-pop fixed inset-0 z-50 flex items-center justify-center bg-lilac-900/70 p-6 backdrop-blur-sm"
+          className="animate-pop fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-6 backdrop-blur-sm"
           onClick={() => setSolved(false)}
         >
-          <div
-            className="max-w-sm rounded-3xl bg-white p-8 text-center shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-2 text-5xl">🎓🔬</div>
-            <h3 className="font-display text-2xl font-bold text-lilac-800">
-              {caseSolved.title}
-            </h3>
-            <p className="mt-3 text-lilac-900/70">{caseSolved.message}</p>
+          <div className="max-w-sm rounded-3xl bg-white p-8 text-center shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-2 text-5xl">🔬💜</div>
+            <h3 className="font-display text-2xl font-bold text-lilac-800">{verdict.title}</h3>
+            <p className="mt-3 text-lilac-900/70">{verdict.text}</p>
             <div className="mt-5 flex justify-center gap-3">
               <button
                 type="button"
                 onClick={() => setSolved(false)}
-                className="font-display cursor-pointer rounded-full bg-lilac-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-lilac-700"
+                className="font-display cursor-pointer rounded-full bg-lilac-600 px-6 py-2 text-sm font-semibold text-[#fff] transition hover:bg-lilac-700"
               >
                 Evviva!
               </button>

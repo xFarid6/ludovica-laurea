@@ -19,12 +19,28 @@
   --color-bloom-50: #fff0f7;
   --color-bloom-200: #ffd6e8;
   --color-bloom-400: #ff8fc7;
+  --color-bloom-600: #f0559f;
 
-  --animate-float: float 7s ease-in-out infinite;
+  /* Science teal — used sparingly: tech tags, laser glow, data borders.
+     Lilac/bloom stay the colors of affection; teal is the color of science. */
+  --color-science-300: oklch(0.8 0.09 200);
+  --color-science-500: oklch(0.72 0.11 200);
+  --color-science-700: oklch(0.55 0.1 210);
+
+  /* Fixed dark purple, same in both themes: for scrims, video/flip-clock
+     tiles and other surfaces that must stay dark instead of following the
+     lilac-900 text scale (which flips light in dark mode). */
+  --color-ink: #1e0f38;
+
+  --animate-float: float 6s ease-in-out infinite;
   --animate-float-slow: float 11s ease-in-out infinite;
-  --animate-bob: bob 3.5s ease-in-out infinite;
+  --animate-bob: bob 2.5s ease-in-out infinite;
   --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pop: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-emission: emission 1.6s ease-in-out infinite;
+  --animate-flash: flash 0.9s ease-out both;
+  --animate-flip-in: flip-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-roll-in: roll-in 0.3s ease-out both;
 
   @keyframes float {
     0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -39,9 +55,58 @@
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes pop {
-    from { opacity: 0; transform: scale(0.85); }
+    from { opacity: 0; transform: scale(0.9); }
+    60% { transform: scale(1.03); }
     to { opacity: 1; transform: scale(1); }
   }
+  @keyframes emission {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+  @keyframes flash {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes flip-in {
+    from { transform: rotateX(-90deg); opacity: 0.4; }
+    to { transform: rotateX(0deg); opacity: 1; }
+  }
+  @keyframes roll-in {
+    from { transform: translateY(-60%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
+
+/* Dark purple mode: overrides the theme's CSS variables directly, so every
+   bg-lilac, text-lilac and bg-white utility across the site re-themes for
+   free — no per-component dark: classes needed. Toggled via .dark on <html>
+   (see index.html for the pre-paint script and Navbar for the toggle). */
+:root.dark {
+  color-scheme: dark;
+
+  /* 400-600 stay untouched: they're brand-accent shades (solid buttons,
+     badges, links) already dark/vivid enough for white text and legible
+     against a near-black page in both themes. Only the surface extremes
+     (50-300) and text extremes (700-900) flip. */
+  --color-lilac-50: #120a1f;
+  --color-lilac-100: #1d1130;
+  --color-lilac-200: #2c1a49;
+  --color-lilac-300: #4a2d78;
+  --color-lilac-700: #ddc3fb;
+  --color-lilac-800: #ebdcfd;
+  --color-lilac-900: #f8f2ff;
+
+  --color-bloom-50: #260f1f;
+  --color-bloom-200: #4a1f3c;
+  --color-bloom-400: #ff9fd0;
+  --color-bloom-600: #ffbfe0;
+
+  --color-science-700: oklch(0.82 0.1 195);
+
+  /* bg-white becomes the dark card surface; the handful of literal white
+     button-text spots use text-[#fff] instead so they don't go dark too. */
+  --color-white: #1d1130;
 }
 
 html {
@@ -63,4 +128,27 @@ h1, h2, h3, .font-display {
 ::selection {
   background: var(--color-lilac-300);
   color: var(--color-lilac-900);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-science-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-float,
+  .animate-float-slow,
+  .animate-bob,
+  .animate-fade-up,
+  .animate-pop,
+  .animate-emission,
+  .animate-flash,
+  .animate-flip-in,
+  .animate-roll-in {
+    animation: none !important;
+  }
 }

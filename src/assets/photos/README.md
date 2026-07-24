@@ -1,11 +1,15 @@
 # Foto
 
-Metti qui le foto di Ludovica (jpg/png/webp), poi:
+Le 3 foto curate (usate in Hero, Diploma, Gallery) vivono qui:
 
-1. Importale in `src/components/Gallery.tsx`:
-   ```ts
-   import laurea from '../assets/photos/laurea.jpg'
-   ```
-2. Aggiungi `src: laurea` alla voce corrispondente in `src/data/content.ts` (array `galleryPhotos`).
+- `crown-wink.jpeg` — corona di fiori, occhiolino + linguaccia (Hero + Gallery)
+- `crown-smile.jpeg` — corona di fiori, sorriso dolce (Gallery)
+- `lab-coat.jpeg` — camice bianco ricamato (Diploma)
 
-Consigliato: immagini quadrate o comunque non troppo pesanti (sotto 1-2MB) per un caricamento veloce su GitHub Pages.
+Sono referenziate in `src/data/content.ts` (`content.gallery[].src`) e importate
+direttamente nei componenti che le usano.
+
+Per la gallery completa (tutte le foto/video del dump grezzo), vedi
+`scripts/optimize-media.mjs` e `scripts/generate-media-index.mjs`: comprimono
+il dump sorgente in `public/gallery/` e `public/videos/` e generano
+`src/data/mediaIndex.ts`.

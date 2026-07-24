@@ -1,6 +1,7 @@
 import FloatingBackground from './components/FloatingBackground'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
+import DoctorateCounter from './components/DoctorateCounter'
 import Timeline from './components/Timeline'
 import InvestigationPlayground from './components/InvestigationPlayground'
 import Gallery from './components/Gallery'
@@ -16,6 +17,7 @@ function App() {
       <Navbar />
       <main>
         <Hero />
+        <DoctorateCounter />
         <Timeline />
         <InvestigationPlayground />
         <Gallery />

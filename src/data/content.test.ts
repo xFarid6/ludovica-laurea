@@ -1,24 +1,28 @@
 import { describe, expect, it } from 'vitest'
-import { clues, timeline, galleryPhotos, guestbookMessages } from './content'
+import { content } from './content'
+import { galleryFullIndex, videoIndex } from './mediaIndex'
 
 describe('content data', () => {
-  it('has unique clue ids', () => {
-    const ids = clues.map((c) => c.id)
+  it('has unique investigation clue ids', () => {
+    const ids = content.investigation.clues.map((c) => c.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('positions every clue inside the 0-100 scene bounds', () => {
-    for (const clue of clues) {
-      expect(clue.x).toBeGreaterThanOrEqual(0)
-      expect(clue.x).toBeLessThanOrEqual(100)
-      expect(clue.y).toBeGreaterThanOrEqual(0)
-      expect(clue.y).toBeLessThanOrEqual(100)
+  it('has non-empty timeline, gallery and guestbook content', () => {
+    expect(content.timeline.length).toBeGreaterThan(0)
+    expect(content.gallery.length).toBeGreaterThan(0)
+    expect(content.guestbook.notes.length).toBeGreaterThan(0)
+  })
+
+  it('has exactly two footer events, each with an .ics filename', () => {
+    expect(content.events.length).toBe(2)
+    for (const event of content.events) {
+      expect(event.ics.endsWith('.ics')).toBe(true)
     }
   })
 
-  it('has non-empty timeline, gallery and guestbook content', () => {
-    expect(timeline.length).toBeGreaterThan(0)
-    expect(galleryPhotos.length).toBeGreaterThan(0)
-    expect(guestbookMessages.length).toBeGreaterThan(0)
+  it('has a non-empty personal media index', () => {
+    expect(galleryFullIndex.length).toBeGreaterThan(0)
+    expect(videoIndex.length).toBeGreaterThan(0)
   })
 })
