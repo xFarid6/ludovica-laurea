@@ -12,23 +12,29 @@ nei toni del lilla, per festeggiarla.
 
 ## Funzionalità
 
-- **Hero** — titolo di benvenuto + bottone "Festeggia" con coriandoli lilla (canvas-confetti)
-- **Timeline** — le tappe del percorso universitario, in ordine cronologico
-- **Caso investigativo** — mini-gioco a tema chimica forense: 6 indizi cliccabili sparsi in una scena, ognuno apre un pannello con dettaglio; trovarli tutti sblocca una schermata "caso chiuso" con coriandoli e pulsante rigioca
-- **Gallery** — griglia foto con lightbox a schermo intero; foto non ancora caricate mostrano un placeholder
-- **Diploma** — pergamena virtuale con effetto flip 3D, si apre al click rivelando tesi/università/data
-- **Elemento personalizzato** — easter egg a tema tavola periodica ("Ludovicium", elemento 118)
-- **Muro degli auguri** — messaggi di amici e famiglia
-- **Sfondo animato** — bolle e molecole SVG fluttuanti, puramente decorativo
-- Tutti i testi sono centralizzati in `src/data/content.ts`, così le sezioni si aggiornano senza toccare i componenti
+- **Hero** — foto + titolo, CTA che scorre al gioco investigativo
+- **Timeline** — le tappe reali del percorso, con reveal-on-scroll (`useReveal` + IntersectionObserver)
+- **Il Caso Di Stasio** — mini-gioco: 4 card-reperto (Raman, SEM-EDX, ICP-MS, LIBS) che si rivelano al tap/tastiera; trovarle tutte scatena un flash LIBS + verdetto finale
+- **Gallery** — 3 foto curate stile polaroid, video ricordi, e una galleria completa con ogni foto del dump originale (compresse, lazy-loaded)
+- **Diploma** — pergamena con dati reali della tesi, apertura a click
+- **Elemento periodico** — card "Lu" (110) con flip al tap/hover
+- **Muro degli auguri** — messaggi precaricati + link `wa.me` per aggiungerne
+- **Footer** — le due date reali (discussione + festa), pulsanti "Aggiungi al calendario" (`.ics` statici in `public/`) e link a Google Maps
+- Tutti i testi in `src/data/content.ts`; foto/video extra indicizzati in `src/data/mediaIndex.ts` (generato, vedi sotto)
 
-## Prossime feature (roadmap)
+## Foto e video: pipeline di compressione
 
-Tracciate come [Issue su GitHub](../../issues) — idee non ancora implementate:
+Il dump grezzo delle foto (280 scatti, alcuni video) è troppo pesante per una
+pagina mobile-first. Due script una-tantum (richiedono `sharp`, già in
+`devDependencies`) si occupano di comprimere e indicizzare:
 
-- Countdown/contatore "Dr.ssa da X giorni"
-- Modalità musica di sottofondo
-- Dark mode lilla
+```bash
+node scripts/optimize-media.mjs        # ridimensiona/comprime in public/gallery e public/videos
+node scripts/generate-media-index.mjs  # rigenera src/data/mediaIndex.ts
+```
+
+Il percorso della cartella sorgente è hardcoded in cima a
+`optimize-media.mjs` — aggiornalo se il dump si sposta.
 
 ## Sviluppo locale
 
